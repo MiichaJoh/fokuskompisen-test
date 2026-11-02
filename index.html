@@ -1,0 +1,178 @@
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fokuskompisen 0.7</title><meta name="theme-color" content="#7853a3"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Fokuskompisen"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png"><style>
+*{box-sizing:border-box}body{font:16px/1.5 system-ui,sans-serif;background:#f4effa;color:#392d47;margin:0}header{text-align:center;padding:28px 12px}h1,h2{color:#68458e}h1{margin:0}main{max-width:850px;margin:auto;padding:0 12px}section{background:#fff;border-radius:18px;padding:20px;margin-bottom:15px;box-shadow:0 3px 15px #4e2e6410}label{display:block;margin:10px 0 5px;font-weight:600}input:not([type=checkbox]),textarea,select{width:100%;padding:10px;border:1px solid #d9c8e8;border-radius:9px;font:inherit}textarea{min-height:65px}button{background:#7856a2;color:white;border:0;border-radius:9px;padding:10px 13px;margin:5px 5px 5px 0;font:inherit;cursor:pointer}.alt{background:#eae1f4;color:#563879}.selected{background:#4c3070}.flex{display:flex;gap:12px;flex-wrap:wrap}.flex>*{flex:1;min-width:175px}.panel{background:#f7f3fc;border-radius:11px;padding:12px;margin:9px 0}.done{opacity:.6}.done strong{text-decoration:line-through}.week{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}.small{font-size:.9em;color:#695d73}#clock{text-align:center;font-size:2.3rem;color:#68458e;font-weight:700}footer{text-align:center;padding:20px;color:#695d73}
+
+.notice{border-left:4px solid #7954a2;background:#f6effd;padding:12px;border-radius:8px}
+.warning{border-left-color:#b35c42;background:#fff5ed}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input[type=time]{width:100%}
+.task-row{border-bottom:1px solid #e5d9ed;padding:12px 0}
+.task-row:last-child{border-bottom:0}
+.task-row label{font-size:.92rem}
+#status{min-height:1.4em}
+@media(max-width:480px){button{min-height:43px}}
+</style></head><body><header><h1>💜 Fokuskompisen</h1><p>En sak i taget. Du bestämmer takten.</p></header><main>
+<section><h2 id="hello">Hej!</h2><label for="name">Vad vill du bli kallad? (frivilligt)</label><input id="name" placeholder="Ditt namn"><p><strong>Hur mycket energi har du?</strong></p><div id="energy"><button data-energy="low">🪫 Låg</button><button data-energy="medium">🔋 Lagom</button><button data-energy="high">⚡ Hög</button></div><label for="feeling">Hur känns dagen? (frivilligt)</label><textarea id="feeling"></textarea><p class="panel" id="message">Du behöver inte göra allt idag.</p></section>
+<section><h2>➕ Ny uppgift</h2><form id="add"><label for="task">Vad vill du göra?</label><input id="task" required maxlength="150" placeholder="Till exempel handla mat"><div class="flex"><div><label for="date">Datum (frivilligt)</label><input type="date" id="date"></div><div><label for="priority">Din prioritet</label><select id="priority"><option value="today">Måste göras idag</option><option value="soon">Bra om det blir gjort</option><option value="later">Kan vänta</option></select></div></div><div class="flex"><div><label for="repeat">Upprepa</label><select id="repeat"><option value="none">Inte återkommande</option><option value="daily">Varje dag</option><option value="weekly">Varje vecka</option></select></div><div><label for="remind">Påminn mig i appen (frivilligt)</label><input type="time" id="remind"></div></div><button>Lägg till</button></form><p class="small">Du bestämmer vad som är viktigast. Fokuskompisen bestämmer aldrig åt dig.</p></section>
+<section><h2>🔔 Mina påminnelser</h2><p class="small">Påminnelser visas när appen är öppen. Inga pushnotiser skickas när appen är stängd.</p><div id="reminders" aria-live="polite"></div></section>
+<section><h2>📝 Mina uppgifter</h2><div id="tasks"></div></section><section><h2>🌷 Min dag</h2><div id="daily"></div></section><section><h2>🗓️ Veckans överblick</h2><div class="week" id="week"></div></section>
+<section><h2>👣 Små steg</h2><label for="choose">Välj en uppgift</label><select id="choose"></select><div id="steps" class="panel">Välj en uppgift för att få hjälp med små steg.</div></section>
+<section><h2>☕ Pauskompis</h2><p>En paus är också viktig. Starta en paus på 20 minuter när du vill.</p><div id="clock">20:00</div><button id="start">Starta paus</button><button class="alt" id="stop">Stoppa och återställ</button><p id="pause" class="panel">Du bestämmer när du är redo igen.</p></section>
+<section><h2>💾 Säkerhetskopia</h2><p>Exportera dina uppgifter till en JSON-fil innan du uppdaterar eller byter mobil. Förvara filen privat – den kan innehålla personliga uppgifter.</p><div class="actions"><button type="button" id="export">Ladda ner säkerhetskopia</button><label for="import" class="alt" style="display:inline-block;padding:10px;border-radius:9px;cursor:pointer">Välj säkerhetskopia</label><input type="file" id="import" accept=".json,application/json" style="max-width:240px"></div><p class="notice warning">Import ersätter informationen på den här enheten. Exportera gärna en kopia först. Du får bekräfta innan något ändras.</p><p id="status" role="status"></p></section>
+<section><h2>💡 Idébank</h2><div id="ideas"></div><p id="idea" class="panel">Välj en liten idé om du vill.</p></section></main><footer>Fokuskompisen 0.7 💜 · Sparar lokalt på enheten · Säkerhetskopiera regelbundet · Fungerar utan internet</footer>
+<script>
+const $=id=>document.getElementById(id);
+const KEY="fokuskompisen05"; // Samma nyckel som 0.6: befintliga uppgifter bevaras
+const EMPTY={name:"",feeling:"",energy:"",tasks:[]};
+let state=JSON.parse(JSON.stringify(EMPTY));
+let storageOk=true;
+try{
+  const old=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(old && typeof old==="object" && Array.isArray(old.tasks)) state={...EMPTY,...old};
+}catch(e){storageOk=false}
+const save=()=>{
+  try{localStorage.setItem(KEY,JSON.stringify(state));storageOk=true;return true}
+  catch(e){storageOk=false;$("status").textContent="Kunde inte spara lokalt. Exportera gärna en säkerhetskopia.";return false}
+};
+const dateKey=(d=new Date())=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const priorities={today:"Måste göras idag",soon:"Bra om det blir gjort",later:"Kan vänta"};
+const repeats={none:"Upprepas inte",daily:"Varje dag",weekly:"Varje vecka"};
+const addDays=(key,n)=>{let d=new Date(key+"T12:00:00");d.setDate(d.getDate()+n);return dateKey(d)};
+function dueOn(t,key){
+  if(t.done || !t.date)return false;
+  if(t.date>key)return false;
+  if(t.repeat==="daily")return true;
+  if(t.repeat==="weekly"){
+    const a=new Date(t.date+"T12:00:00"),b=new Date(key+"T12:00:00");
+    return Math.round((b-a)/86400000)%7===0;
+  }
+  return t.date===key;
+}
+function question(s){
+  if(/handla|mat|middag/i.test(s))return "Har du tillräckligt med mat hemma för idag?";
+  if(/tvätt|kläder/i.test(s))return "Har du tillräckligt med rena kläder just nu?";
+  if(/faktura|räkning|betala/i.test(s))return "Är betalningen eller förfallodatumet idag eller snart?";
+  if(/läkare|möte|besök|tid/i.test(s))return "Finns det en bokad tid eller en deadline?";
+  if(/städa|disk|dammsug/i.test(s))return "Behöver detta göras idag för att hemmet ska fungera?";
+  return "Vad skulle göra den här uppgiften lättare att börja med?";
+}
+function smallSteps(s){
+  if(/handla|mat/i.test(s))return ["Kolla vad som finns hemma","Skriv en kort inköpslista","Bestäm när du kan handla","Handla det viktigaste först"];
+  if(/tvätt|kläder/i.test(s))return ["Samla ihop tvätten","Sortera det viktigaste","Starta en maskin","Ta hand om tvätten när den är klar"];
+  if(/städa|disk|dammsug/i.test(s))return ["Välj en liten yta","Börja med en enda sak","Ta paus när du behöver","Bestäm själv när det räcker"];
+  if(/ringa|samtal/i.test(s))return ["Skriv ner vad du vill säga","Ta fram numret","Ring när du känner dig redo","Du behöver inte säga allt perfekt"];
+  return ["Ta fram det du behöver","Gör den minsta första delen","Ta en paus om du behöver","Välj om du vill fortsätta"];
+}
+function greeting(){let h=new Date().getHours();$("hello").textContent=(h<11?"God morgon":h<18?"Hej":"God kväll")+(state.name?", "+state.name:"")+"! 💜"}
+function energy(){
+  document.querySelectorAll("[data-energy]").forEach(b=>b.classList.toggle("selected",b.dataset.energy===state.energy));
+  $("message").textContent=state.energy==="low"?"Vid låg energi kan du välja en enda liten sak, eller vila.":state.energy==="medium"?"Välj det som känns rimligt för dig.":state.energy==="high"?"Du har energi just nu – planera gärna in en paus också.":"Du behöver inte göra allt idag.";
+}
+function render(){
+  const box=$("tasks");box.innerHTML="";
+  if(!state.tasks.length)box.innerHTML='<p class="panel">Inga uppgifter ännu.</p>';
+  state.tasks.forEach(t=>{
+    const div=document.createElement("div");div.className="panel"+(t.done?" done":"");
+    div.innerHTML='<strong>'+esc(t.name)+'</strong><p class="small">'+esc(question(t.name))+'</p><div class="flex"><div><label>Prioritet</label><select class="p">'+Object.entries(priorities).map(([k,v])=>'<option value="'+k+'" '+(t.priority===k?"selected":"")+'>'+v+'</option>').join("")+'</select></div><div><label>Datum</label><input class="d" type="date" value="'+esc(t.date||"")+'"></div><div><label>Upprepning</label><select class="r">'+Object.entries(repeats).map(([k,v])=>'<option value="'+k+'" '+((t.repeat||"none")===k?"selected":"")+'>'+v+'</option>').join("")+'</select></div><div><label>Påminnelse i appen</label><input class="time" type="time" value="'+esc(t.remind||"")+'"></div></div><div class="actions"><button class="alt donebtn">'+(t.done?"Ångra klar":"Markera klar")+'</button><button class="alt del">Ta bort</button></div>';
+    div.querySelector(".p").onchange=e=>{t.priority=e.target.value;save();render()};
+    div.querySelector(".d").onchange=e=>{t.date=e.target.value;save();render()};
+    div.querySelector(".r").onchange=e=>{t.repeat=e.target.value;if(t.repeat!=="none"&&!t.date)t.date=dateKey();save();render()};
+    div.querySelector(".time").onchange=e=>{t.remind=e.target.value;save();render()};
+    div.querySelector(".donebtn").onclick=()=>{
+      if(t.repeat&&t.repeat!=="none"&&!t.done){
+        const base=t.date||dateKey(),next=t.repeat==="daily"?addDays(base,1):addDays(base,7);
+        // Förfallna upprepningar flyttas fram till nästa framtida förekomst
+        let d=next;
+        while(d<=dateKey())d=addDays(d,t.repeat==="daily"?1:7);
+        t.date=d;
+        $("status").textContent="Återkommande uppgift flyttad till nästa tillfälle.";
+      }else t.done=!t.done;
+      save();render()
+    };
+    div.querySelector(".del").onclick=()=>{if(!confirm("Ta bort uppgiften?"))return;state.tasks=state.tasks.filter(x=>x!==t);save();render()};
+    box.append(div);
+  });
+  $("daily").innerHTML="";
+  Object.entries(priorities).forEach(([k,label])=>{
+    const items=state.tasks.filter(t=>!t.done&&t.priority===k&&(!t.date||dueOn(t,dateKey())||(t.repeat==="none"&&t.date<dateKey())));
+    const div=document.createElement("div");div.className="panel";
+    div.innerHTML="<strong>"+label+"</strong>"+(items.length?"<ul>"+items.map(t=>"<li>"+esc(t.name)+"</li>").join("")+"</ul>":"<p>Inget här just nu.</p>");
+    $("daily").append(div)
+  });
+  $("week").innerHTML="";
+  for(let i=0;i<7;i++){
+    const d=new Date();d.setDate(d.getDate()+i);const day=dateKey(d),items=state.tasks.filter(t=>dueOn(t,day));
+    const div=document.createElement("div");div.className="panel";
+    div.innerHTML="<strong>"+(i===0?"Idag":esc(d.toLocaleDateString("sv-SE",{weekday:"long"})))+"</strong><p class='small'>"+esc(d.toLocaleDateString("sv-SE",{day:"numeric",month:"short"}))+"</p>"+(items.length?"<ul>"+items.map(t=>"<li>"+esc(t.name)+"</li>").join("")+"</ul>":"<p class='small'>Inget planerat</p>");
+    $("week").append(div);
+  }
+  const old=$("choose").value;
+  $("choose").innerHTML='<option value="">Välj en uppgift</option>'+state.tasks.filter(t=>!t.done).map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>').join("");
+  if(state.tasks.some(t=>String(t.id)===old&&!t.done)){$("choose").value=old;renderSteps()}else $("steps").textContent="Välj en uppgift för att få hjälp med små steg.";
+  renderReminders();
+}
+function renderSteps(){
+  const t=state.tasks.find(t=>String(t.id)===$("choose").value);
+  $("steps").innerHTML="";
+  if(!t){$("steps").textContent="Välj en uppgift för att få hjälp med små steg.";return}
+  if(!Array.isArray(t.stepsDone))t.stepsDone=[];
+  smallSteps(t.name).forEach((s,i)=>{
+    const label=document.createElement("label");label.style.fontWeight="normal";
+    const input=document.createElement("input");input.type="checkbox";input.checked=!!t.stepsDone[i];
+    input.onchange=()=>{t.stepsDone[i]=input.checked;save()};
+    label.append(input,document.createTextNode(" "+s));$("steps").append(label)
+  })
+}
+$("choose").onchange=renderSteps;
+$("add").onsubmit=e=>{
+  e.preventDefault();const name=$("task").value.trim();if(!name)return;
+  const repeat=$("repeat").value;
+  state.tasks.push({id:String(Date.now())+Math.random(),name,date:$("date").value||(repeat!=="none"?dateKey():""),priority:$("priority").value,repeat,remind:$("remind").value,done:false,stepsDone:[]});
+  save();$("add").reset();render()
+};
+$("name").value=state.name||"";$("feeling").value=state.feeling||"";
+$("name").oninput=e=>{state.name=e.target.value;save();greeting()};
+$("feeling").oninput=e=>{state.feeling=e.target.value;save()};
+document.querySelectorAll("[data-energy]").forEach(b=>b.onclick=()=>{state.energy=b.dataset.energy;save();energy()});
+let remaining=1200,timer=null;
+const display=()=>{$("clock").textContent=String(Math.floor(remaining/60)).padStart(2,"0")+":"+String(remaining%60).padStart(2,"0")};
+$("start").onclick=()=>{if(timer)return;if(remaining===0)remaining=1200;$("pause").textContent="Din paus pågår. Ta det lugnt.";timer=setInterval(()=>{remaining--;display();if(remaining<=0){clearInterval(timer);timer=null;$("pause").textContent="Pausen är slut. Du bestämmer när du vill fortsätta."}},1000)};
+$("stop").onclick=()=>{clearInterval(timer);timer=null;remaining=1200;display();$("pause").textContent="Timern är återställd."};
+["Drick ett glas vatten","Öppna fönstret en stund","Plocka undan en sak","Skriv ner en tanke","Vila en stund"].forEach(s=>{let b=document.createElement("button");b.className="alt";b.textContent=s;b.onclick=()=>{$("idea").textContent="Liten idé: "+s+". Du väljer själv."};$("ideas").append(b)});
+function renderReminders(){
+  const now=new Date(),current=now.getHours()*60+now.getMinutes(),today=dateKey();
+  const items=state.tasks.filter(t=>{
+    if(t.done||!t.remind||!t.date)return false;
+    const [h,m]=t.remind.split(":").map(Number);
+    return dueOn(t,today)&&h*60+m<=current;
+  });
+  $("reminders").innerHTML=items.length?"<div class='notice'>"+items.map(t=>"<p>🔔 "+esc(t.name)+" – "+esc(t.remind)+"</p>").join("")+"</div>":"<p class='small'>Inga påminnelser just nu.</p>";
+}
+setInterval(renderReminders,60000);
+$("export").onclick=()=>{
+  const backup={app:"Fokuskompisen",version:"0.7",exportedAt:new Date().toISOString(),data:state};
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="Fokuskompisen_sakerhetskopia_"+dateKey()+".json";document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  $("status").textContent="Säkerhetskopian har förberetts för nedladdning. Kontrollera att filen sparades.";
+};
+$("import").onchange=async e=>{
+  const file=e.target.files[0];if(!file)return;
+  try{
+    if(file.size>2_000_000)throw Error("Filen är för stor.");
+    const incoming=JSON.parse(await file.text());
+    const data=incoming&&incoming.app==="Fokuskompisen"?incoming.data:incoming;
+    if(!data||typeof data!=="object"||!Array.isArray(data.tasks)||data.tasks.length>5000||data.tasks.some(t=>!t||typeof t.name!=="string"||t.name.length>150||!["today","soon","later"].includes(t.priority)||typeof t.id!=="string"&&typeof t.id!=="number"))throw Error("Filen har inte ett giltigt Fokuskompisen-format.");
+    if(!confirm("Importen ersätter alla uppgifter och inställningar på den här enheten. Har du sparat en säkerhetskopia? Vill du fortsätta?"))return;
+    const next={...EMPTY,name:String(data.name||"").slice(0,100),feeling:String(data.feeling||"").slice(0,5000),energy:String(data.energy||""),tasks:data.tasks.map(t=>({...t,name:t.name.slice(0,150),repeat:["none","daily","weekly"].includes(t.repeat)?t.repeat:"none",remind:/^([01]\d|2[0-3]):[0-5]\d$/.test(t.remind||"")?t.remind:""}))};
+    const prev=state;state=next;
+    if(!save()){state=prev;throw Error("Det gick inte att spara importen.")}
+    $("name").value=state.name;$("feeling").value=state.feeling;greeting();energy();render();
+    $("status").textContent="Importen är klar. Kontrollera dina uppgifter.";
+  }catch(err){$("status").textContent="Importen misslyckades: "+err.message}
+  finally{e.target.value=""}
+};
+greeting();energy();render();
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+</script></body></html>

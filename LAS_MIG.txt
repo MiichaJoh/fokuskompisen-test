@@ -1,0 +1,8 @@
+FOKUSKOMPISEN 0.7
+1. Ta en säkerhetskopia av dina uppgifter i 0.6 innan uppdateringen om möjligt.
+2. Packa upp ZIP-filen och ladda upp ALLA filer och mappen icons till GitHub-repositoryts rot. Ersätt tidigare filer.
+3. GitHub Pages publicerar uppdateringen. Öppna appen och kontrollera dina befintliga uppgifter.
+4. Appen använder samma localStorage-nyckel som version 0.6 (fokuskompisen05). Uppgifter på samma enhet och webbläsare ska därför finnas kvar. Det går inte att garantera om webbläsardata har raderats.
+5. Säkerhetskopian kan importeras på en annan mobil men ersätter dess befintliga uppgifter.
+6. Påminnelser visas endast när appen är öppen, inga bakgrundsnotiser.
+7. Upprepade uppgifter flyttas till nästa tillfälle när du markerar dem klara.
