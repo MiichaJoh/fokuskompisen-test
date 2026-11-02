@@ -73,7 +73,18 @@ function render(){
   if(!state.tasks.length)box.innerHTML='<p class="panel">Inga uppgifter ännu.</p>';
   state.tasks.forEach(t=>{
     const div=document.createElement("div");div.className="panel"+(t.done?" done":"");
-    div.innerHTML='<strong>'+esc(t.name)+'</strong><p class="small">'+esc(question(t.name))+'</p><div class="flex"><div><label>Prioritet</label><select class="p">'+Object.entries(priorities).map(([k,v])=>'<option value="'+k+'" '+(t.priority===k?"selected":"")+'>'+v+'</option>').join("")+'</select></div><div><label>Datum</label><input class="d" type="date" value="'+esc(t.date||"")+'"></div><div><label>Upprepning</label><select class="r">'+Object.entries(repeats).map(([k,v])=>'<option value="'+k+'" '+((t.repeat||"none")===k?"selected":"")+'>'+v+'</option>').join("")+'</select></div><div><label>Påminnelse i appen</label><input class="time" type="time" value="'+esc(t.remind||"")+'"></div></div><div class="actions"><button class="alt donebtn">'+(t.done?"Ångra klar":"Markera klar")+'</button><button class="alt del">Ta bort</button></div>';
+    div.innerHTML='<strong>'+esc(t.name)+'</strong><p class="small">'+esc(question(t.name))+'</p><div class="flex"><div><label>Prioritet</label><select class="p">'+Object.entries(priorities).map(([k,v])=>'<option value="'+k+'" '+(t.priority===k?"selected":"")+'>'+v+'</option>').join("")+'</select></div><div><label>Datum</label><input class="d" type="date" value="'+esc(t.date||"")+'"></div><div><label>Upprepning</label><select class="r">'+Object.entries(repeats).map(([k,v])=>'<option value="'+k+'" '+((t.repeat||"none")===k?"selected":"")+'>'+v+'</option>').join("")+'</select></div><div><label>Påminnelse i appen</label><input class="time" type="time" value="'+esc(t.remind||"")+'"></div></div><div class="actions"><button class="alt donebtn">'+(t.done?"Ångra klar":"Markera klar")+'</button><button class="alt editbtn">✏️ Redigera</button><button class="alt del">Ta bort</button></div>';
+        div.querySelector(".editbtn").onclick=()=>{
+      const nyttNamn=prompt("Ändra uppgiftens namn:",t.name);
+      if(nyttNamn===null)return;
+      const namn=nyttNamn.trim();
+      if(!namn){alert("Uppgiftens namn får inte vara tomt.");return;}
+      if(namn.length>150){alert("Namnet får vara högst 150 tecken.");return;}
+      const gammaltNamn=t.name;
+      t.name=namn;
+      if(!save()){t.name=gammaltNamn;alert("Det gick inte att spara ändringen.");return;}
+      render();
+    };
     div.querySelector(".p").onchange=e=>{t.priority=e.target.value;save();render()};
     div.querySelector(".d").onchange=e=>{t.date=e.target.value;save();render()};
     div.querySelector(".r").onchange=e=>{t.repeat=e.target.value;if(t.repeat!=="none"&&!t.date)t.date=dateKey();save();render()};
