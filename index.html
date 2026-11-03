@@ -153,9 +153,9 @@ $("stop").onclick=()=>{clearInterval(timer);timer=null;remaining=1200;display();
 function renderReminders(){
   const now=new Date(),current=now.getHours()*60+now.getMinutes(),today=dateKey();
   const items=state.tasks.filter(t=>{
-    if(t.done||!t.remind||!t.date)return false;
+    if(t.done||!t.remind)return false;
     const [h,m]=t.remind.split(":").map(Number);
-    return dueOn(t,today)&&h*60+m<=current;
+    return (!t.date || dueOn(t,today)) && h*60+m<=current;
   });
   $("reminders").innerHTML=items.length?"<div class='notice'>"+items.map(t=>"<p>🔔 "+esc(t.name)+" – "+esc(t.remind)+"</p>").join("")+"</div>":"<p class='small'>Inga påminnelser just nu.</p>";
 }
