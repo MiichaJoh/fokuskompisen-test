@@ -190,6 +190,11 @@ greeting();energy();render();
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 const scheduleButton = document.getElementById("addScheduleActivity");
   scheduleButton.addEventListener("click", function() {
-  alert("Här ska du snart kunna lägga till en aktivitet!");
+  const activityName = prompt("Vad vill du lägga till i ditt dagsschema?");
+    if (activityName && activityName.trim()) {
+  const activity = document.createElement("div");
+  activity.textContent = activityName.trim();
+  document.getElementById("scheduleActivities").appendChild(activity);
+}
 });
 </script></body></html>
