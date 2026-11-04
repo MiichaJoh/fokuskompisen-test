@@ -188,4 +188,8 @@ $("import").onchange=async e=>{
 };
 greeting();energy();render();
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+const scheduleButton = document.getElementById("addScheduleActivity");
+  scheduleButton.addEventListener("click", function() {
+  alert("Här ska du snart kunna lägga till en aktivitet!");
+});
 </script></body></html>
