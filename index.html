@@ -196,10 +196,25 @@ const scheduleStorageKey = "fokuskompisen07schedule";
   activity.textContent = activityName;
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "🗑️ Ta bort";
+    const editButton = document.createElement("button");
+    editButton.textContent = "✏️ Redigera";
+    activity.appendChild(editButton);
+    editButton.addEventListener("click", function() {
+      const newName = prompt("Ändra aktivitetens namn:", activityName);
+      if (newName === null || !newName.trim()) return;
+      const activityIndex = scheduleActivities.indexOf(activityName);
+      if (activityIndex !== -1) {
+        scheduleActivities[activityIndex] = newName.trim();
+        localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
+        activity.firstChild.textContent = newName.trim();
+        activityName = newName.trim();
+        }
+      });
     activity.appendChild(deleteButton);
     deleteButton.addEventListener("click", function() {
       if (confirm("Vill du verkligen ta bort aktiviteten?")) {
-        scheduleActivities.splice(scheduleActivities.indexOf(activityName), 1);
+const deleteIndex = scheduleActivities.indexOf(activityName);
+if (deleteIndex !== -1) scheduleActivities.splice(deleteIndex, 1);
         localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
         activity.remove();
         }
