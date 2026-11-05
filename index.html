@@ -212,6 +212,19 @@ const scheduleStorageKey = "fokuskompisen07schedule";
     if (activityName && activityName.trim()) {
   const activity = document.createElement("div");
   activity.textContent = (activityTime ? activityTime + " – " : "") + activityName.trim();
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "🗑️ Ta bort";
+      activity.appendChild(deleteButton);
+      deleteButton.addEventListener("click", function() {
+        if (confirm("Vill du verkligen ta bort aktiviteten?")) {
+          const activityIndex = scheduleActivities.indexOf((activityTime ? activityTime + " – " : "") + activityName.trim());
+          if (activityIndex !== -1) {
+            scheduleActivities.splice(activityIndex, 1);
+            localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
+            activity.remove();
+            }
+          }
+        });
 scheduleActivities.push((activityTime ? activityTime + " – " : "") + activityName.trim());
       localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
   document.getElementById("scheduleActivities").appendChild(activity);
