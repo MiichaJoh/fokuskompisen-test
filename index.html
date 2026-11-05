@@ -192,9 +192,19 @@ const scheduleStorageKey = "fokuskompisen07schedule";
   let scheduleActivities = JSON.parse(localStorage.getItem(scheduleStorageKey) || "[]");
   const scheduleButton = document.getElementById("addScheduleActivity");
   scheduleActivities.forEach(function(activityName) {
-  const activity = document.createElement("div");
+    const activity = document.createElement("div");
   activity.textContent = activityName;
-  document.getElementById("scheduleActivities").appendChild(activity);
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "🗑️ Ta bort";
+    activity.appendChild(deleteButton);
+    deleteButton.addEventListener("click", function() {
+      if (confirm("Vill du verkligen ta bort aktiviteten?")) {
+        scheduleActivities.splice(scheduleActivities.indexOf(activityName), 1);
+        localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
+        activity.remove();
+        }
+      });
+   document.getElementById("scheduleActivities").appendChild(activity);
 });
   scheduleButton.addEventListener("click", function() {
   const activityName = prompt("Vad vill du lägga till i ditt dagsschema?");
