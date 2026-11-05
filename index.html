@@ -229,10 +229,24 @@ if (deleteIndex !== -1) scheduleActivities.splice(deleteIndex, 1);
   activity.textContent = (activityTime ? activityTime + " – " : "") + activityName.trim();
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "🗑️ Ta bort";
+      const editButton = document.createElement("button");
+      editButton.textContent = "✏️ Redigera";
+      activity.appendChild(editButton);
+      editButton.addEventListener("click", function() {
+const oldActivity = activity.firstChild.textContent;
+        const newActivity = prompt("Ändra aktivitet och klockslag:", oldActivity);
+        if (newActivity === null || !newActivity.trim()) return;
+        const activityIndex = scheduleActivities.indexOf(oldActivity);
+        if (activityIndex !== -1) {
+          scheduleActivities[activityIndex] = newActivity.trim();
+          localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
+          activity.firstChild.textContent = newActivity.trim();
+          }
+        });
       activity.appendChild(deleteButton);
       deleteButton.addEventListener("click", function() {
         if (confirm("Vill du verkligen ta bort aktiviteten?")) {
-          const activityIndex = scheduleActivities.indexOf((activityTime ? activityTime + " – " : "") + activityName.trim());
+          const activityIndex = scheduleActivities.indexOf(activity.firstChild.textContent);
           if (activityIndex !== -1) {
             scheduleActivities.splice(activityIndex, 1);
             localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
