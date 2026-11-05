@@ -188,12 +188,21 @@ $("import").onchange=async e=>{
 };
 greeting();energy();render();
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
-const scheduleButton = document.getElementById("addScheduleActivity");
+const scheduleStorageKey = "fokuskompisen07schedule";
+  let scheduleActivities = JSON.parse(localStorage.getItem(scheduleStorageKey) || "[]");
+  const scheduleButton = document.getElementById("addScheduleActivity");
+  scheduleActivities.forEach(function(activityName) {
+  const activity = document.createElement("div");
+  activity.textContent = activityName;
+  document.getElementById("scheduleActivities").appendChild(activity);
+});
   scheduleButton.addEventListener("click", function() {
   const activityName = prompt("Vad vill du lägga till i ditt dagsschema?");
     if (activityName && activityName.trim()) {
   const activity = document.createElement("div");
   activity.textContent = activityName.trim();
+      scheduleActivities.push(activityName.trim());
+localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
   document.getElementById("scheduleActivities").appendChild(activity);
 }
 });
