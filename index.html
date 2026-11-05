@@ -208,10 +208,11 @@ const scheduleStorageKey = "fokuskompisen07schedule";
 });
   scheduleButton.addEventListener("click", function() {
   const activityName = prompt("Vad vill du lägga till i ditt dagsschema?");
+    const activityTime = prompt("Vilken tid ska aktiviteten börja? (t.ex. 08:30)");
     if (activityName && activityName.trim()) {
   const activity = document.createElement("div");
-  activity.textContent = activityName.trim();
-      scheduleActivities.push(activityName.trim());
+  activity.textContent = (activityTime ? activityTime + " – " : "") + activityName.trim();
+      scheduleActivities.push((activityTime ? activityTime + " – " : "") + activityName.trim());
 localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
   document.getElementById("scheduleActivities").appendChild(activity);
 }
