@@ -212,8 +212,8 @@ const scheduleStorageKey = "fokuskompisen07schedule";
     if (activityName && activityName.trim()) {
   const activity = document.createElement("div");
   activity.textContent = (activityTime ? activityTime + " – " : "") + activityName.trim();
-      scheduleActivities.push((activityTime ? activityTime + " – " : "") + activityName.trim());
-localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
+scheduleActivities.push((activityTime ? activityTime + " – " : "") + activityName.trim());
+      localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
   document.getElementById("scheduleActivities").appendChild(activity);
 }
 });
