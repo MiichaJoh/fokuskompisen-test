@@ -125,7 +125,11 @@ body[data-theme="dark"] #weekPage .week * {
 body[data-theme="dark"] #message {
     color: #30263b;
 }
-</style></head><body><header><h1>💜 Fokuskompisen</h1><button id="menuButton" type="button" aria-label="Öppna menyn" aria-expanded="false">☰ Meny</button><nav id="mainMenu" aria-label="Huvudmeny" hidden>
+    main section[hidden] {
+    display: none !important;
+}
+</style>
+</head><body><header><h1>💜 Fokuskompisen</h1><button id="menuButton" type="button" aria-label="Öppna menyn" aria-expanded="false">☰ Meny</button><nav id="mainMenu" aria-label="Huvudmeny" hidden>
   <button type="button" data-page="home">🏠 Startsida</button>
   <button type="button" data-page="schedule">📅 Mitt dagsschema</button><button type="button" data-page="daily">🌷 Min dag</button>
   <button type="button" data-page="tasks">✅ Mina uppgifter</button><button type="button" data-page="addTask">➕ Ny uppgift</button>
