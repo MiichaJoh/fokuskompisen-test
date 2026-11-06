@@ -171,8 +171,10 @@ body[data-theme="dark"] #message {
 <section id="stepsPage"><h2>👣 Små steg</h2><label for="choose">Välj en uppgift</label><select id="choose"></select><div id="steps" class="panel">Välj en uppgift för att få hjälp med små steg.</div></section>
 <section id="pausePage"><h2>☕ Pauskompis</h2><p>En paus är också viktig. Starta en paus på 20 minuter när du vill.</p><div id="clock">20:00</div><button id="start">Starta paus</button><button class="alt" id="stop">Stoppa och återställ</button><p id="pause" class="panel">Du bestämmer när du är redo igen.</p></section>
 <section id="backupPage"><h2>💾 Säkerhetskopia</h2><p>Exportera dina uppgifter till en JSON-fil innan du uppdaterar eller byter mobil. Förvara filen privat – den kan innehålla personliga uppgifter.</p><div class="actions"><button type="button" id="export">Ladda ner säkerhetskopia</button><label for="import" class="alt" style="display:inline-block;padding:10px;border-radius:9px;cursor:pointer">Välj säkerhetskopia</label><input type="file" id="import" accept=".json,application/json" style="max-width:240px"></div><p class="notice warning">Import ersätter informationen på den här enheten. Exportera gärna en kopia först. Du får bekräfta innan något ändras.</p><p id="status" role="status"></p></section>
-<section id="ideasPage"><h2>💡 Idébank</h2><div id="ideas"></div><p id="idea" class="panel">Välj en liten idé om du vill.</p>
-<h3>🏠 Anpassa min startsida</h3>
+<section id="ideasPage"><h2>💡 Idébank</h2><div id="ideas"></div><p id="idea" class="panel">Välj en liten idé om du vill.</p></section>
+<section id="settingsPage">
+  <h2>⚙️ Inställningar</h2>
+    <h3>🏠 Anpassa min startsida</h3>
 <p>Välj vad du vill se på din startsida:</p>
 
 <label>
@@ -189,8 +191,7 @@ body[data-theme="dark"] #message {
   <input type="checkbox" id="showHomeReminders" checked>
   🔔 Mina påminnelser
 </label>
-</section><section id="settingsPage">
-  <h2>⚙️ Inställningar</h2>
+
   <p>Här kommer du att kunna anpassa Fokuskompisen efter dina behov.</p>
     <h3>🎨 Välj färgtema</h3>
 
