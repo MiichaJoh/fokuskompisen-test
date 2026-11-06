@@ -162,6 +162,7 @@ body[data-theme="dark"] #message {
 </div>
     </div>
 </div>
+    </section>
     <section id="addTaskPage"><h2>➕ Ny uppgift</h2><form id="add"><label for="task">Vad vill du göra?</label><input id="task" required maxlength="150" placeholder="Till exempel handla mat"><div class="flex"><div><label for="date">Datum (frivilligt)</label><input type="date" id="date"></div><div><label for="priority">Din prioritet</label><select id="priority"><option value="today">Måste göras idag</option><option value="soon">Bra om det blir gjort</option><option value="later">Kan vänta</option></select></div></div><div class="flex"><div><label for="repeat">Upprepa</label><select id="repeat"><option value="none">Inte återkommande</option><option value="daily">Varje dag</option><option value="weekly">Varje vecka</option></select></div><div><label for="remind">Påminn mig i appen (frivilligt)</label><input type="time" id="remind"></div></div><button>Lägg till</button></form><p class="small">Du bestämmer vad som är viktigast. Fokuskompisen bestämmer aldrig åt dig.</p></section>
 <section id="remindersPage"><h2>🔔 Mina påminnelser</h2><p class="small">Påminnelser visas när appen är öppen. Inga pushnotiser skickas när appen är stängd.</p><div id="reminders" aria-live="polite"></div></section>
 <section id="tasksPage"><h2>📝 Mina uppgifter</h2><div id="tasks"></div></section><section id="dailyPage"><h2>🌷 Min dag</h2><div id="daily"></div></section>
