@@ -479,8 +479,10 @@ if (deleteIndex !== -1) {
         activity.remove();
           updateHomeSchedule();
         }
-      });
+      }
+        });
    document.getElementById("scheduleActivities").appendChild(activity);
+        
 });
   scheduleButton.addEventListener("click", function() {
   const activityName = prompt("Vad vill du lägga till i ditt dagsschema?");
