@@ -49,7 +49,66 @@ input[type=time]{width:100%}
   outline-offset: 2px;
 }main section[hidden] {
   display: none !important;
-}</style></head><body><header><h1>💜 Fokuskompisen</h1><button id="menuButton" type="button" aria-label="Öppna menyn" aria-expanded="false">☰ Meny</button><nav id="mainMenu" aria-label="Huvudmeny" hidden>
+}
+/* Fokuskompisen 0.7 – färgteman */
+:root {
+  --theme-bg: #f7f2fc;
+  --theme-text: #30263b;
+  --theme-accent: #9270c3;
+}
+    /* Mjuk blå */
+body[data-theme="blue"] {
+  --theme-bg: #eaf4fc;
+  --theme-text: #243b53;
+  --theme-accent: #528bb8;
+}
+    /* Naturgrön */
+body[data-theme="green"] {
+  --theme-bg: #eaf5e8;
+  --theme-text: #29452e;
+  --theme-accent: #5b9565;
+}
+    /* Mörkt läge */
+body[data-theme="dark"] {
+  --theme-bg: #242331;
+  --theme-text: #f1edf8;
+  --theme-accent: #a78bda;
+}
+    /* Använd det valda färgtemat */
+body {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+}
+    /* Anpassa menyknappen efter färgtemat */
+#menuButton {
+  background-color: var(--theme-accent);
+  color: white;
+}
+    /* Mörkt läge – formulär och meny */
+body[data-theme="dark"] #mainMenu,
+body[data-theme="dark"] main section {
+  background-color: #343246;
+  color: #f1edf8;
+}
+
+body[data-theme="dark"] input,
+body[data-theme="dark"] select,
+body[data-theme="dark"] textarea,
+body[data-theme="dark"] #mainMenu button {
+  background-color: #454259;
+  color: #ffffff;
+  border-color: #817a9b;
+}
+    /* Menyn följer valt färgtema */
+body:not([data-theme="dark"]) #mainMenu {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+body:not([data-theme="dark"]) #mainMenu button {
+  color: var(--theme-text);
+}
+</style></head><body><header><h1>💜 Fokuskompisen</h1><button id="menuButton" type="button" aria-label="Öppna menyn" aria-expanded="false">☰ Meny</button><nav id="mainMenu" aria-label="Huvudmeny" hidden>
   <button type="button" data-page="home">🏠 Startsida</button>
   <button type="button" data-page="schedule">📅 Mitt dagsschema</button><button type="button" data-page="daily">🌷 Min dag</button>
   <button type="button" data-page="tasks">✅ Mina uppgifter</button><button type="button" data-page="addTask">➕ Ny uppgift</button>
@@ -69,6 +128,15 @@ input[type=time]{width:100%}
 <section id="ideasPage"><h2>💡 Idébank</h2><div id="ideas"></div><p id="idea" class="panel">Välj en liten idé om du vill.</p></section><section id="settingsPage">
   <h2>⚙️ Inställningar</h2>
   <p>Här kommer du att kunna anpassa Fokuskompisen efter dina behov.</p>
+    <h3>🎨 Välj färgtema</h3>
+
+<label for="themeSelect">Mitt färgtema:</label>
+<select id="themeSelect">
+  <option value="lavender">💜 Lugn lavendel</option>
+  <option value="blue">💙 Mjuk blå</option>
+  <option value="green">💚 Naturgrön</option>
+  <option value="dark">🌙 Mörkt läge</option>
+</select>
 </section></main><footer>Fokuskompisen 0.7 💜 · Sparar lokalt på enheten · Säkerhetskopiera regelbundet · Fungerar utan internet</footer>
 <script> const menuButton = document.getElementById("menuButton");
 const mainMenu = document.getElementById("mainMenu");
@@ -106,7 +174,20 @@ menuButton.addEventListener("click", () => {
 }); 
   showPage("home");
 const $=id=>document.getElementById(id);
-const KEY="fokuskompisen07test"; // Isolerad testlagring, rör inte version 0.6
+const KEY="fokuskompisen07test";
+    // Färgteman för Fokuskompisen 0.7
+const themeSelect = document.getElementById("themeSelect");
+const savedTheme = localStorage.getItem("fokuskompisen07theme") || "lavender";
+
+document.body.dataset.theme = savedTheme;
+themeSelect.value = savedTheme;
+
+themeSelect.addEventListener("change", () => {
+  const selectedTheme = themeSelect.value;
+  document.body.dataset.theme = selectedTheme;
+  localStorage.setItem("fokuskompisen07theme", selectedTheme);
+});
+    // Isolerad testlagring, rör inte version 0.6
 const EMPTY={name:"",feeling:"",energy:"",tasks:[]};
 let state=JSON.parse(JSON.stringify(EMPTY));
 let storageOk=true;
