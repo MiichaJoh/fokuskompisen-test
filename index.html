@@ -117,7 +117,31 @@ body:not([data-theme="dark"]) #mainMenu button {
   <button type="button" data-page="settings">⚙️ Inställningar</button><button type="button" data-page="backup">💾 Säkerhetskopia</button>
 </nav><p>En sak i taget. Du bestämmer takten.</p></header><main>
 <section id="homePage"><h2 id="hello">Hej!</h2><label for="name">Vad vill du bli kallad? (frivilligt)</label><input id="name" placeholder="Ditt namn"><p><strong>Hur mycket energi har du?</strong></p><div id="energy"><button data-energy="low">🪫 Låg</button><button data-energy="medium">🔋 Lagom</button><button data-energy="high">⚡ Hög</button></div><label for="feeling">Hur känns dagen? (frivilligt)</label><textarea id="feeling"></textarea><p class="panel" id="message">Du behöver inte göra allt idag.</p></section>
-<section id="addTaskPage"><h2>➕ Ny uppgift</h2><form id="add"><label for="task">Vad vill du göra?</label><input id="task" required maxlength="150" placeholder="Till exempel handla mat"><div class="flex"><div><label for="date">Datum (frivilligt)</label><input type="date" id="date"></div><div><label for="priority">Din prioritet</label><select id="priority"><option value="today">Måste göras idag</option><option value="soon">Bra om det blir gjort</option><option value="later">Kan vänta</option></select></div></div><div class="flex"><div><label for="repeat">Upprepa</label><select id="repeat"><option value="none">Inte återkommande</option><option value="daily">Varje dag</option><option value="weekly">Varje vecka</option></select></div><div><label for="remind">Påminn mig i appen (frivilligt)</label><input type="time" id="remind"></div></div><button>Lägg till</button></form><p class="small">Du bestämmer vad som är viktigast. Fokuskompisen bestämmer aldrig åt dig.</p></section>
+<div id="personalHome">
+  <h2>🏠 Min personliga startsida</h2>
+  <p>Här kan du se det som är viktigast för dig idag.</p>
+  <div id="homeWidgets">
+  <div id="homeTasksWidget">
+    <h3>✅ Dagens uppgifter</h3>
+    <div id="homeTasksContent">
+      <p>Här kommer dagens uppgifter att visas.</p>
+    </div>
+  </div>
+</div>
+    <div id="homeScheduleWidget">
+  <h3>📅 Mitt dagsschema</h3>
+  <div id="homeScheduleContent">
+    <p>Här kommer dagens schema att visas.</p>
+  </div>
+<div id="homeRemindersWidget">
+  <h3>🔔 Mina påminnelser</h3>
+  <div id="homeRemindersContent">
+    <p>Här kommer dina påminnelser att visas.</p>
+  </div>
+</div>
+    </div>
+</div>
+    <section id="addTaskPage"><h2>➕ Ny uppgift</h2><form id="add"><label for="task">Vad vill du göra?</label><input id="task" required maxlength="150" placeholder="Till exempel handla mat"><div class="flex"><div><label for="date">Datum (frivilligt)</label><input type="date" id="date"></div><div><label for="priority">Din prioritet</label><select id="priority"><option value="today">Måste göras idag</option><option value="soon">Bra om det blir gjort</option><option value="later">Kan vänta</option></select></div></div><div class="flex"><div><label for="repeat">Upprepa</label><select id="repeat"><option value="none">Inte återkommande</option><option value="daily">Varje dag</option><option value="weekly">Varje vecka</option></select></div><div><label for="remind">Påminn mig i appen (frivilligt)</label><input type="time" id="remind"></div></div><button>Lägg till</button></form><p class="small">Du bestämmer vad som är viktigast. Fokuskompisen bestämmer aldrig åt dig.</p></section>
 <section id="remindersPage"><h2>🔔 Mina påminnelser</h2><p class="small">Påminnelser visas när appen är öppen. Inga pushnotiser skickas när appen är stängd.</p><div id="reminders" aria-live="polite"></div></section>
 <section id="tasksPage"><h2>📝 Mina uppgifter</h2><div id="tasks"></div></section><section id="dailyPage"><h2>🌷 Min dag</h2><div id="daily"></div></section>
   <section id="schedule"><h2>📅 Mitt dagsschema</h2><button type="button" id="addScheduleActivity">➕ Lägg till aktivitet</button><div id="scheduleActivities"></div></section>
@@ -125,7 +149,25 @@ body:not([data-theme="dark"]) #mainMenu button {
 <section id="stepsPage"><h2>👣 Små steg</h2><label for="choose">Välj en uppgift</label><select id="choose"></select><div id="steps" class="panel">Välj en uppgift för att få hjälp med små steg.</div></section>
 <section id="pausePage"><h2>☕ Pauskompis</h2><p>En paus är också viktig. Starta en paus på 20 minuter när du vill.</p><div id="clock">20:00</div><button id="start">Starta paus</button><button class="alt" id="stop">Stoppa och återställ</button><p id="pause" class="panel">Du bestämmer när du är redo igen.</p></section>
 <section id="backupPage"><h2>💾 Säkerhetskopia</h2><p>Exportera dina uppgifter till en JSON-fil innan du uppdaterar eller byter mobil. Förvara filen privat – den kan innehålla personliga uppgifter.</p><div class="actions"><button type="button" id="export">Ladda ner säkerhetskopia</button><label for="import" class="alt" style="display:inline-block;padding:10px;border-radius:9px;cursor:pointer">Välj säkerhetskopia</label><input type="file" id="import" accept=".json,application/json" style="max-width:240px"></div><p class="notice warning">Import ersätter informationen på den här enheten. Exportera gärna en kopia först. Du får bekräfta innan något ändras.</p><p id="status" role="status"></p></section>
-<section id="ideasPage"><h2>💡 Idébank</h2><div id="ideas"></div><p id="idea" class="panel">Välj en liten idé om du vill.</p></section><section id="settingsPage">
+<section id="ideasPage"><h2>💡 Idébank</h2><div id="ideas"></div><p id="idea" class="panel">Välj en liten idé om du vill.</p>
+<h3>🏠 Anpassa min startsida</h3>
+<p>Välj vad du vill se på din startsida:</p>
+
+<label>
+  <input type="checkbox" id="showHomeTasks" checked>
+  ✅ Dagens uppgifter
+</label>
+
+<label>
+  <input type="checkbox" id="showHomeSchedule" checked>
+  📅 Mitt dagsschema
+</label>
+
+<label>
+  <input type="checkbox" id="showHomeReminders" checked>
+  🔔 Mina påminnelser
+</label>
+</section><section id="settingsPage">
   <h2>⚙️ Inställningar</h2>
   <p>Här kommer du att kunna anpassa Fokuskompisen efter dina behov.</p>
     <h3>🎨 Välj färgtema</h3>
@@ -175,6 +217,56 @@ menuButton.addEventListener("click", () => {
   showPage("home");
 const $=id=>document.getElementById(id);
 const KEY="fokuskompisen07test";
+    // Inställningar för personlig startsida
+    // Visa eller dölj startsidans olika delar
+function updateHomeWidgets() {
+  const widgets = {
+    tasks: "homeTasksWidget",
+    schedule: "homeScheduleWidget",
+    reminders: "homeRemindersWidget"
+  };
+
+  Object.entries(widgets).forEach(([name, id]) => {
+    const widget = document.getElementById(id);
+    const checkbox = document.getElementById(
+      "showHome" + name.charAt(0).toUpperCase() + name.slice(1)
+    );
+
+    if (widget && checkbox) {
+      widget.hidden = !checkbox.checked;
+    }
+  });
+}
+const HOME_SETTINGS_KEY = "fokuskompisen07home";
+
+const homeOptions = {
+  tasks: document.getElementById("showHomeTasks"),
+  schedule: document.getElementById("showHomeSchedule"),
+  reminders: document.getElementById("showHomeReminders")
+};
+
+updateHomeWidgets();
+    const savedHomeSettings = JSON.parse(
+  localStorage.getItem(HOME_SETTINGS_KEY) || "{}"
+);
+
+Object.entries(homeOptions).forEach(([name, checkbox]) => {
+  checkbox.checked = savedHomeSettings[name] !== false;
+
+  checkbox.addEventListener("change", () => {
+    const settings = {};
+
+    Object.entries(homeOptions).forEach(([key, option]) => {
+      settings[key] = option.checked;
+    });
+
+    localStorage.setItem(
+      HOME_SETTINGS_KEY,
+      JSON.stringify(settings)
+    );
+  });
+    updateHomeWidgets();
+});
     // Färgteman för Fokuskompisen 0.7
 const themeSelect = document.getElementById("themeSelect");
 const savedTheme = localStorage.getItem("fokuskompisen07theme") || "lavender";
@@ -235,6 +327,8 @@ function energy(){
   $("message").textContent=state.energy==="low"?"Vid låg energi kan du välja en enda liten sak, eller vila.":state.energy==="medium"?"Välj det som känns rimligt för dig.":state.energy==="high"?"Du har energi just nu – planera gärna in en paus också.":"Du behöver inte göra allt idag.";
 }
 function render(){
+    updateHomeTasks();
+updateHomeReminders();
   const box=$("tasks");box.innerHTML="";
   if(!state.tasks.length)box.innerHTML='<p class="panel">Inga uppgifter ännu.</p>';
   state.tasks.forEach(t=>{
@@ -372,15 +466,18 @@ const scheduleStorageKey = "fokuskompisen07schedule";
         localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
         activity.firstChild.textContent = newName.trim();
         activityName = newName.trim();
+          updateHomeSchedule();
         }
       });
     activity.appendChild(deleteButton);
     deleteButton.addEventListener("click", function() {
       if (confirm("Vill du verkligen ta bort aktiviteten?")) {
 const deleteIndex = scheduleActivities.indexOf(activityName);
-if (deleteIndex !== -1) scheduleActivities.splice(deleteIndex, 1);
+if (deleteIndex !== -1) {
+  scheduleActivities.splice(deleteIndex, 1);
         localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
         activity.remove();
+          updateHomeSchedule();
         }
       });
    document.getElementById("scheduleActivities").appendChild(activity);
@@ -398,13 +495,16 @@ if (deleteIndex !== -1) scheduleActivities.splice(deleteIndex, 1);
       activity.appendChild(editButton);
       editButton.addEventListener("click", function() {
 const oldActivity = activity.firstChild.textContent;
+          
+const activityIndex = scheduleActivities.indexOf(oldActivity);
         const newActivity = prompt("Ändra aktivitet och klockslag:", oldActivity);
         if (newActivity === null || !newActivity.trim()) return;
-        const activityIndex = scheduleActivities.indexOf(oldActivity);
+        
         if (activityIndex !== -1) {
           scheduleActivities[activityIndex] = newActivity.trim();
           localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
           activity.firstChild.textContent = newActivity.trim();
+            updateHomeSchedule();
           }
         });
       activity.appendChild(deleteButton);
@@ -415,12 +515,81 @@ const oldActivity = activity.firstChild.textContent;
             scheduleActivities.splice(activityIndex, 1);
             localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
             activity.remove();
+              updateHomeSchedule();
             }
           }
         });
 scheduleActivities.push((activityTime ? activityTime + " – " : "") + activityName.trim());
       localStorage.setItem(scheduleStorageKey, JSON.stringify(scheduleActivities));
   document.getElementById("scheduleActivities").appendChild(activity);
+        updateHomeSchedule();
 }
 });
+    // Visa sparade aktiviteter på den personliga startsidan
+function updateHomeSchedule() {
+  const container = document.getElementById("homeScheduleContent");
+      if (!container) return;
+  container.replaceChildren();
+
+  if (scheduleActivities.length === 0) {
+    container.textContent = "Inga aktiviteter i schemat ännu.";
+    return;
+  }
+
+  scheduleActivities.forEach(activityName => {
+    const row = document.createElement("p");
+    row.textContent = activityName;
+    container.appendChild(row);
+  });
+}
+    // Visa dagens uppgifter på startsidan
+function updateHomeTasks() {
+  const container = document.getElementById("homeTasksContent");
+  if (!container) return;
+
+  container.replaceChildren();
+
+  const today = dateKey(new Date());
+  const todaysTasks = state.tasks.filter(task => dueOn(task, today));
+
+  if (todaysTasks.length === 0) {
+    container.textContent = "Inga uppgifter planerade för idag.";
+    return;
+  }
+
+  todaysTasks.forEach(task => {
+    const row = document.createElement("p");
+    row.textContent = "☐ " + task.name;
+    container.appendChild(row);
+  });
+}
+  
+// Visa dagens påminnelser på startsidan
+function updateHomeReminders() {
+  const container = document.getElementById("homeRemindersContent");
+  if (!container) return;
+
+  container.replaceChildren();
+
+  const today = dateKey(new Date());
+  const reminders = state.tasks.filter(task =>
+    !task.done &&
+    task.remind &&
+    (!task.date || dueOn(task, today))
+  );
+
+  if (reminders.length === 0) {
+    container.textContent = "Inga påminnelser för idag.";
+    return;
+  }
+
+  reminders.forEach(task => {
+    const row = document.createElement("p");
+    row.textContent = "🔔 " + task.remind + " – " + task.name;
+    container.appendChild(row);
+  });
+}
+updateHomeSchedule();
+    updateHomeTasks();
+    updateHomeReminders();
 </script></body></html>
