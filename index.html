@@ -422,7 +422,7 @@ $("add").onsubmit=e=>{
   e.preventDefault();const name=$("task").value.trim();if(!name)return;
   const repeat=$("repeat").value;
   state.tasks.push({id:String(Date.now())+Math.random(),name,date:$("date").value||(repeat!=="none"?dateKey():""),priority:$("priority").value,repeat,remind:$("remind").value,done:false,stepsDone:[]});
-  save();$("add").reset();render()
+  save();$("add").reset();render();alert("✅ Uppgiften har lagts till! 💜");
 };
 $("name").value=state.name||"";$("feeling").value=state.feeling||"";
 $("name").oninput=e=>{state.name=e.target.value;save();greeting()};
