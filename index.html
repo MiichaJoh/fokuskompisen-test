@@ -447,13 +447,50 @@ const display=()=>{$("clock").textContent=String(Math.floor(remaining/60)).padSt
 $("start").onclick=()=>{if(timer)return;if(remaining===0)remaining=1200;$("pause").textContent="Din paus pågår. Ta det lugnt.";timer=setInterval(()=>{remaining--;display();if(remaining<=0){clearInterval(timer);timer=null;$("pause").textContent="Pausen är slut. Du bestämmer när du vill fortsätta."}},1000)};
 $("stop").onclick=()=>{clearInterval(timer);timer=null;remaining=1200;display();$("pause").textContent="Timern är återställd."};
 ["Drick ett glas vatten","Öppna fönstret en stund","Plocka undan en sak","Skriv ner en tanke","Vila en stund"].forEach(s=>{let b=document.createElement("button");b.className="alt";b.textContent=s;b.onclick=()=>{$("idea").textContent="Liten idé: "+s+". Du väljer själv."};$("ideas").append(b)});
-function renderReminders(){
+
+function playReminderSound() {
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+    const oscillator = ctx.createOscillator();
+    const volume = ctx.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.value = 660;
+    volume.gain.setValueAtTime(0.0001, ctx.currentTime);
+    volume.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.03);
+    volume.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+
+    oscillator.connect(volume);
+    volume.connect(ctx.destination);
+    oscillator.start();
+    oscillator.stop(ctx.currentTime + 0.4);
+    oscillator.onended = () => ctx.close();
+  } catch (error) {
+    console.warn("Påminnelseljud kunde inte spelas", error);
+  }
+}
+const playedReminderSounds = new Set();
+    function renderReminders(){
   const now=new Date(),current=now.getHours()*60+now.getMinutes(),today=dateKey();
+        const currentMinute = now.getHours() * 60 + now.getMinutes();
   const items=state.tasks.filter(t=>{
     if(t.done||!t.remind)return false;
     const [h,m]=t.remind.split(":").map(Number);
     return (!t.date || dueOn(t,today)) && h*60+m<=current;
   });
+        
+items.forEach(t => {
+  const [h, m] = t.remind.split(":").map(Number);
+  const key = today + "-" + t.id + "-" + t.remind;
+
+  if (h * 60 + m === currentMinute && !playedReminderSounds.has(key)) {
+    playedReminderSounds.add(key);
+    playReminderSound();
+  }
+});
+
   $("reminders").innerHTML=items.length?"<div class='notice'>"+items.map(t=>"<p>🔔 "+esc(t.name)+" – "+esc(t.remind)+"</p>").join("")+"</div>":"<p class='small'>Inga påminnelser just nu.</p>";
 }
 setInterval(renderReminders,60000);
