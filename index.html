@@ -226,7 +226,8 @@ const pages = {
       section.hidden = id !== pages[page];
     }
   });
-} mainMenu.querySelectorAll("button[data-page]").forEach(button => {
+} 
+    mainMenu.querySelectorAll("button[data-page]").forEach(button => {
   button.addEventListener("click", () => {
     showPage(button.dataset.page);
     mainMenu.hidden = true;
