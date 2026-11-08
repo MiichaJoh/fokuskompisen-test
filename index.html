@@ -465,7 +465,7 @@ function playBeep(delay) {
   oscillator.frequency.value = 660;
 
   volume.gain.setValueAtTime(0.0001, start);
-  volume.gain.exponentialRampToValueAtTime(0.16, start + 0.04);
+  volume.gain.exponentialRampToValueAtTime(0.25, start + 0.04);
   volume.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
 
   oscillator.connect(volume);
