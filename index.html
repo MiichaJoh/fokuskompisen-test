@@ -453,20 +453,33 @@ function playReminderSound() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return;
     const ctx = new AudioContextClass();
-    const oscillator = ctx.createOscillator();
-    const volume = ctx.createGain();
+    
+const startTime = ctx.currentTime;
 
-    oscillator.type = "sine";
-    oscillator.frequency.value = 660;
-    volume.gain.setValueAtTime(0.0001, ctx.currentTime);
-    volume.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.03);
-    volume.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+function playBeep(delay) {
+  const oscillator = ctx.createOscillator();
+  const volume = ctx.createGain();
+  const start = startTime + delay;
 
-    oscillator.connect(volume);
-    volume.connect(ctx.destination);
-    oscillator.start();
-    oscillator.stop(ctx.currentTime + 0.4);
-    oscillator.onended = () => ctx.close();
+  oscillator.type = "sine";
+  oscillator.frequency.value = 660;
+
+  volume.gain.setValueAtTime(0.0001, start);
+  volume.gain.exponentialRampToValueAtTime(0.16, start + 0.04);
+  volume.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
+
+  oscillator.connect(volume);
+  volume.connect(ctx.destination);
+
+  oscillator.start(start);
+  oscillator.stop(start + 0.35);
+}
+
+playBeep(0);
+playBeep(0.5);
+
+setTimeout(() => ctx.close(), 1200);
+
   } catch (error) {
     console.warn("Påminnelseljud kunde inte spelas", error);
   }
