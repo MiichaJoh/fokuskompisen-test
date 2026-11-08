@@ -215,6 +215,21 @@ body[data-theme="dark"] #idea {
   <option value="green">💚 Naturgrön</option>
   <option value="dark">🌙 Mörkt läge</option>
 </select>
+
+<h3>🔔 Påminnelseljud</h3>
+
+<label>
+  <input type="checkbox" id="reminderSoundEnabled" checked>
+  Spela ljud vid påminnelser
+</label>
+
+<p>
+  <label for="reminderVolume">🔊 Ljudstyrka</label>
+  <input type="range" id="reminderVolume"
+         min="0" max="100" step="10" value="50">
+  <span id="reminderVolumeValue">50 %</span>
+</p>
+
 </section></main><footer>Fokuskompisen 0.7 💜 · Sparar lokalt på enheten · Säkerhetskopiera regelbundet · Fungerar utan internet</footer>
 <script> const menuButton = document.getElementById("menuButton");
 const mainMenu = document.getElementById("mainMenu");
@@ -316,6 +331,29 @@ themeSelect.addEventListener("change", () => {
   document.body.dataset.theme = selectedTheme;
   localStorage.setItem("fokuskompisen07theme", selectedTheme);
 });
+   
+const soundEnabled = document.getElementById("reminderSoundEnabled");
+const soundVolume = document.getElementById("reminderVolume");
+const soundVolumeValue = document.getElementById("reminderVolumeValue");
+
+const savedSoundEnabled = localStorage.getItem("fokuskompisen07soundEnabled");
+const savedSoundVolume = localStorage.getItem("fokuskompisen07soundVolume");
+
+soundEnabled.checked = savedSoundEnabled !== "false";
+soundVolume.value = savedSoundVolume === null ? "50" : savedSoundVolume;
+soundVolumeValue.textContent = soundVolume.value + " %";
+soundVolume.disabled = !soundEnabled.checked;
+
+soundEnabled.addEventListener("change", () => {
+  localStorage.setItem("fokuskompisen07soundEnabled", String(soundEnabled.checked));
+  soundVolume.disabled = !soundEnabled.checked;
+});
+
+soundVolume.addEventListener("input", () => {
+  soundVolumeValue.textContent = soundVolume.value + " %";
+  localStorage.setItem("fokuskompisen07soundVolume", soundVolume.value);
+});
+
     // Isolerad testlagring, rör inte version 0.6
 const EMPTY={name:"",feeling:"",energy:"",tasks:[]};
 let state=JSON.parse(JSON.stringify(EMPTY));
@@ -449,6 +487,7 @@ $("stop").onclick=()=>{clearInterval(timer);timer=null;remaining=1200;display();
 ["Drick ett glas vatten","Öppna fönstret en stund","Plocka undan en sak","Skriv ner en tanke","Vila en stund"].forEach(s=>{let b=document.createElement("button");b.className="alt";b.textContent=s;b.onclick=()=>{$("idea").textContent="Liten idé: "+s+". Du väljer själv."};$("ideas").append(b)});
 
 function playReminderSound() {
+    if (!soundEnabled.checked) return;
   try {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return;
@@ -465,7 +504,7 @@ function playBeep(delay) {
   oscillator.frequency.value = 660;
 
   volume.gain.setValueAtTime(0.0001, start);
-  volume.gain.exponentialRampToValueAtTime(0.25, start + 0.04);
+  volume.gain.exponentialRampToValueAtTime(Math.max(0.0001, 0.5 * Number(soundVolume.value) / 100), start + 0.04);
   volume.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
 
   oscillator.connect(volume);
