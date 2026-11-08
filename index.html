@@ -461,7 +461,7 @@ function playBeep(delay) {
   const volume = ctx.createGain();
   const start = startTime + delay;
 
-  oscillator.type = "sine";
+  oscillator.type = "triangle";
   oscillator.frequency.value = 660;
 
   volume.gain.setValueAtTime(0.0001, start);
