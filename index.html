@@ -139,9 +139,26 @@ body[data-theme="dark"] #steps,
 body[data-theme="dark"] #idea {
   color: #30263b;
 }
-    main section[hidden] {
-    display: none !important;
-}
+    main section[hidden] { display: none !important; }
+/* Tydlig, lugn inloggning med god läsbarhet */
+[hidden] { display: none !important; }
+#loginSection { max-width: 480px; margin: 28px auto 40px; padding: clamp(20px,5vw,36px); background: #fff; border: 1px solid #e3d9ed; border-radius: 22px; box-shadow: 0 12px 36px #392d4714; }
+#loginSection h2 { margin-top: 0; line-height: 1.25; }
+#loginSection input { min-height: 48px; background: white; }
+#loginSection button { min-height: 48px; font-weight: 650; }
+#loginButton { width: 100%; margin: 18px 0 8px; }
+#signupButton { width: 100%; margin: 0 0 8px; background: #eae1f4; color: #392d47; }
+#resetPasswordButton { background: transparent; color: #563879; text-decoration: underline; padding-left: 0; }
+#loginMessage:not(:empty) { padding: 12px; background: #f1eaf8; border-radius: 10px; }
+#headerLogout { background: #fff; color: #4c3070; border: 2px solid #9270c3; min-height: 46px; font-weight: 650; }
+#headerActions { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+#menuButton { float: none; margin: 0; }
+#loginSection :focus-visible, #headerActions :focus-visible { outline: 3px solid #51377c; outline-offset: 3px; }
+body[data-theme="dark"] #loginSection { background: #343246; color: #f1edf8; border-color: #817a9b; }
+body[data-theme="dark"] #loginMessage:not(:empty) { background: #454259; }
+body[data-theme="dark"] #resetPasswordButton { color: #e6d5ff; }
+@media (max-width: 480px) { #headerActions button { flex: 1; } }
+
 </style>
 </head>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -156,7 +173,7 @@ body[data-theme="dark"] #idea {
 </script>
 
   <body>
-        <header><h1>💜 Fokuskompisen</h1><button id="menuButton" type="button" aria-label="Öppna menyn" aria-expanded="false">☰ Meny</button><nav id="mainMenu" aria-label="Huvudmeny" hidden>
+        <header><h1>💜 Fokuskompisen</h1><div id="headerActions" hidden><button id="menuButton" type="button" aria-label="Öppna menyn" aria-expanded="false">☰ Meny</button><button id="headerLogout" type="button">🚪 Logga ut</button></div><nav id="mainMenu" aria-label="Huvudmeny" hidden>
   <button type="button" data-page="home">🏠 Startsida</button>
   <button type="button" data-page="schedule">📅 Mitt dagsschema</button><button type="button" data-page="daily">🌷 Min dag</button>
   <button type="button" data-page="tasks">✅ Mina uppgifter</button><button type="button" data-page="addTask">➕ Ny uppgift</button>
@@ -165,8 +182,8 @@ body[data-theme="dark"] #idea {
   <button type="button" data-page="settings">⚙️ Inställningar</button><button type="button" data-page="backup">💾 Säkerhetskopia</button>
 </nav><p>En sak i taget. Du bestämmer takten.</p></header>
       <main>
-      <section id="loginSection" class="panel">
-  <h2>💜 Logga in på Fokuskompisen</h2>
+      <section id="loginSection" class="panel" aria-label="Inloggning">
+  <h2>Välkommen till Fokuskompisen 💜</h2><p>En lugnare vardag, ett steg i taget. Logga in eller skapa ett konto för att fortsätta.</p>
           <label for="loginEmail">E-postadress</label>
 <input type="email" id="loginEmail" autocomplete="email" placeholder="Din e-postadress">
           <label for="loginPassword">Lösenord</label>
@@ -174,7 +191,6 @@ body[data-theme="dark"] #idea {
           <button type="button" id="loginButton">🔐 Logga in</button>
           <button type="button" id="signupButton">💜 Skapa konto</button>
           <p id="loginMessage" role="status" aria-live="polite"></p>
-          <button type="button" id="logoutButton" hidden>🚪 Logga ut</button>
           <button type="button" id="resetPasswordButton">🔑 Glömt lösenordet?</button>
           <div id="newPasswordSection" hidden>
   <h3>🔑 Välj ett nytt lösenord</h3>
@@ -186,7 +202,7 @@ body[data-theme="dark"] #idea {
 
 </section>
     
-<section id="homePage"><h2 id="hello">Hej!</h2><label for="name">Vad vill du bli kallad? (frivilligt)</label><input id="name" placeholder="Ditt namn"><p><strong>Hur mycket energi har du?</strong></p><div id="energy"><button data-energy="low">🪫 Låg</button><button data-energy="medium">🔋 Lagom</button><button data-energy="high">⚡ Hög</button></div><label for="feeling">Hur känns dagen? (frivilligt)</label><textarea id="feeling"></textarea><p class="panel" id="message">Du behöver inte göra allt idag.</p>
+<section id="homePage" hidden><h2 id="hello">Hej!</h2><label for="name">Vad vill du bli kallad? (frivilligt)</label><input id="name" placeholder="Ditt namn"><p><strong>Hur mycket energi har du?</strong></p><div id="energy"><button data-energy="low">🪫 Låg</button><button data-energy="medium">🔋 Lagom</button><button data-energy="high">⚡ Hög</button></div><label for="feeling">Hur känns dagen? (frivilligt)</label><textarea id="feeling"></textarea><p class="panel" id="message">Du behöver inte göra allt idag.</p>
 <div id="personalHome">
   <h2>🏠 Min personliga startsida</h2>
   <p>Här kan du se det som är viktigast för dig idag.</p>
@@ -298,10 +314,12 @@ const pages = {
   });
 });
 menuButton.addEventListener("click", () => {
+  if (headerActions.hidden) return;
   mainMenu.hidden = !mainMenu.hidden;
   menuButton.setAttribute("aria-expanded", String(!mainMenu.hidden));
 }); 
   showPage("home");
+  Object.values(pages).forEach(id => { const el = document.getElementById(id); if (el) el.hidden = true; });
 const $=id=>document.getElementById(id);
 const KEY="fokuskompisen07test";
     // Inställningar för personlig startsida
@@ -830,11 +848,59 @@ document.getElementById("resetPasswordButton").addEventListener("click", async (
 const newPasswordSection = document.getElementById("newPasswordSection");
 const newPasswordMessage = document.getElementById("newPasswordMessage");
 
-fokusSupabase.auth.onAuthStateChange((event) => {
+const loginSection = document.getElementById("loginSection");
+const headerActions = document.getElementById("headerActions");
+const headerLogout = document.getElementById("headerLogout");
+const loginStatus = document.getElementById("loginMessage");
+let passwordRecoveryActive = false;
+let authReady = false;
+
+function displayAuthState(session) {
+  authReady = true;
+  const loggedIn = Boolean(session && session.user);
+  const showApp = loggedIn && !passwordRecoveryActive;
+  loginSection.hidden = showApp;
+  headerActions.hidden = !showApp;
+  mainMenu.hidden = true;
+  menuButton.setAttribute("aria-expanded", "false");
+  Object.values(pages).forEach(id => {
+    const section = document.getElementById(id);
+    if (section) section.hidden = true;
+  });
+  if (showApp) {
+    showPage("home");
+    document.getElementById("loginPassword").value = "";
+  }
+}
+
+fokusSupabase.auth.onAuthStateChange((event, session) => {
   if (event === "PASSWORD_RECOVERY") {
+    passwordRecoveryActive = true;
     newPasswordSection.hidden = false;
     newPasswordMessage.textContent = "Välj ditt nya lösenord. 💜";
   }
+  if (event === "SIGNED_OUT") {
+    passwordRecoveryActive = false;
+    newPasswordSection.hidden = true;
+    loginStatus.textContent = "Du har loggat ut. 💜";
+  }
+  displayAuthState(session);
+});
+
+fokusSupabase.auth.getSession().then(({data, error}) => {
+  if (!authReady && !error) displayAuthState(data.session);
+  if (error) loginStatus.textContent = "Kunde inte kontrollera inloggningen. Försök igen.";
+}).catch(() => { loginStatus.textContent = "Kunde inte kontrollera inloggningen. Kontrollera internetanslutningen."; });
+
+headerLogout.addEventListener("click", async () => {
+  if (!window.confirm("Vill du logga ut från Fokuskompisen?")) return;
+  headerLogout.disabled = true;
+  try {
+    const {error} = await fokusSupabase.auth.signOut();
+    if (error) { loginStatus.textContent = "Utloggningen misslyckades. Försök igen."; }
+  } catch (error) {
+    loginStatus.textContent = "Det gick inte att logga ut just nu.";
+  } finally { headerLogout.disabled = false; }
 });
 
 document.getElementById("saveNewPasswordButton").addEventListener("click", async () => {
@@ -860,6 +926,9 @@ document.getElementById("saveNewPasswordButton").addEventListener("click", async
     newPasswordMessage.textContent = "Ditt nya lösenord är sparat! 💜";
     document.getElementById("newPassword").value = "";
     newPasswordSection.hidden = true;
+    passwordRecoveryActive = false;
+    const { data } = await fokusSupabase.auth.getSession();
+    displayAuthState(data.session);
   } catch (error) {
     newPasswordMessage.textContent = "Det gick inte att spara lösenordet just nu.";
   }
