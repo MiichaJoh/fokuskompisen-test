@@ -1,0 +1,10 @@
+Fokuskompisen 0.7 – förbättrad inloggning (testversion)
+
+1. Spara gärna en JSON-säkerhetskopia i appen innan uppdateringen.
+2. Ersätt index.html och sw.js i GitHub-repot fokuskompisen-test.
+3. Testa först i en vanlig webbläsare, därefter som installerad app.
+4. Kontrollera inloggning, uppdatering av sidan, utloggning, lösenordsåterställning och uppgifter.
+5. Rör inte fokuskompisen (0.6).
+
+VIKTIGT: Uppgifter sparas fortfarande i webbläsarens lokala lagring, INTE i Supabase per konto. Konton ger alltså ännu inte säker, användarseparerad synkning mellan enheter. På en delad enhet kan lokala uppgifter finnas kvar efter utloggning. Appen ska inte lanseras till flera användare med privata uppgifter innan detta har åtgärdats.
+Pushnotiser när appen är stängd ingår inte i denna uppdatering.
