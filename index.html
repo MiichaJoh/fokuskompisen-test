@@ -176,6 +176,14 @@ body[data-theme="dark"] #idea {
           <p id="loginMessage" role="status" aria-live="polite"></p>
           <button type="button" id="logoutButton" hidden>🚪 Logga ut</button>
           <button type="button" id="resetPasswordButton">🔑 Glömt lösenordet?</button>
+          <div id="newPasswordSection" hidden>
+  <h3>🔑 Välj ett nytt lösenord</h3>
+  <label for="newPassword">Nytt lösenord</label>
+  <input type="password" id="newPassword" minlength="12" autocomplete="new-password" placeholder="Minst 12 tecken">
+  <button type="button" id="saveNewPasswordButton">💜 Spara nytt lösenord</button>
+  <p id="newPasswordMessage" role="status"></p>
+</div>
+
 </section>
     
 <section id="homePage"><h2 id="hello">Hej!</h2><label for="name">Vad vill du bli kallad? (frivilligt)</label><input id="name" placeholder="Ditt namn"><p><strong>Hur mycket energi har du?</strong></p><div id="energy"><button data-energy="low">🪫 Låg</button><button data-energy="medium">🔋 Lagom</button><button data-energy="high">⚡ Hög</button></div><label for="feeling">Hur känns dagen? (frivilligt)</label><textarea id="feeling"></textarea><p class="panel" id="message">Du behöver inte göra allt idag.</p>
@@ -815,6 +823,45 @@ document.getElementById("resetPasswordButton").addEventListener("click", async (
       : "Om adressen finns registrerad får du ett mejl för att återställa lösenordet. 💜";
   } catch (error) {
     message.textContent = "Det gick inte att skicka mejlet just nu.";
+  }
+});
+
+
+const newPasswordSection = document.getElementById("newPasswordSection");
+const newPasswordMessage = document.getElementById("newPasswordMessage");
+
+fokusSupabase.auth.onAuthStateChange((event) => {
+  if (event === "PASSWORD_RECOVERY") {
+    newPasswordSection.hidden = false;
+    newPasswordMessage.textContent = "Välj ditt nya lösenord. 💜";
+  }
+});
+
+document.getElementById("saveNewPasswordButton").addEventListener("click", async () => {
+  const password = document.getElementById("newPassword").value;
+
+  if (password.length < 12) {
+    newPasswordMessage.textContent = "Lösenordet måste innehålla minst 12 tecken.";
+    return;
+  }
+
+  newPasswordMessage.textContent = "Sparar nytt lösenord...";
+
+  try {
+    const { error } = await fokusSupabase.auth.updateUser({
+      password: password
+    });
+
+    if (error) {
+      newPasswordMessage.textContent = "Kunde inte spara lösenordet: " + error.message;
+      return;
+    }
+
+    newPasswordMessage.textContent = "Ditt nya lösenord är sparat! 💜";
+    document.getElementById("newPassword").value = "";
+    newPasswordSection.hidden = true;
+  } catch (error) {
+    newPasswordMessage.textContent = "Det gick inte att spara lösenordet just nu.";
   }
 });
 
