@@ -145,6 +145,16 @@ body[data-theme="dark"] #idea {
 </style>
 </head>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+<script>
+  const SUPABASE_URL = "https://askqdwonkjulrpjikarj.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_gANhM8Y6lEqH2QaVKvylVQ_fpQ4hfoK";
+  const fokusSupabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+</script>
+
   <body>
         <header><h1>💜 Fokuskompisen</h1><button id="menuButton" type="button" aria-label="Öppna menyn" aria-expanded="false">☰ Meny</button><nav id="mainMenu" aria-label="Huvudmeny" hidden>
   <button type="button" data-page="home">🏠 Startsida</button>
