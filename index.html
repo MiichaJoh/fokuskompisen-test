@@ -175,6 +175,7 @@ body[data-theme="dark"] #idea {
           <button type="button" id="signupButton">💜 Skapa konto</button>
           <p id="loginMessage" role="status" aria-live="polite"></p>
           <button type="button" id="logoutButton" hidden>🚪 Logga ut</button>
+          <button type="button" id="resetPasswordButton">🔑 Glömt lösenordet?</button>
 </section>
     
 <section id="homePage"><h2 id="hello">Hej!</h2><label for="name">Vad vill du bli kallad? (frivilligt)</label><input id="name" placeholder="Ditt namn"><p><strong>Hur mycket energi har du?</strong></p><div id="energy"><button data-energy="low">🪫 Låg</button><button data-energy="medium">🔋 Lagom</button><button data-energy="high">⚡ Hög</button></div><label for="feeling">Hur känns dagen? (frivilligt)</label><textarea id="feeling"></textarea><p class="panel" id="message">Du behöver inte göra allt idag.</p>
@@ -792,4 +793,29 @@ document.getElementById("loginButton").addEventListener("click", async () => {
     message.textContent = "Det gick inte att logga in just nu.";
   }
 });
+
+document.getElementById("resetPasswordButton").addEventListener("click", async () => {
+  const email = document.getElementById("loginEmail").value.trim();
+  const message = document.getElementById("loginMessage");
+
+  if (!email) {
+    message.textContent = "Fyll i din e-postadress först.";
+    return;
+  }
+
+  message.textContent = "Skickar återställningsmejl...";
+
+  try {
+    const { error } = await fokusSupabase.auth.resetPasswordForEmail(email, {
+      redirectTo: "https://miichajoh.github.io/fokuskompisen-test/"
+    });
+
+    message.textContent = error
+      ? "Kunde inte skicka mejlet: " + error.message
+      : "Om adressen finns registrerad får du ett mejl för att återställa lösenordet. 💜";
+  } catch (error) {
+    message.textContent = "Det gick inte att skicka mejlet just nu.";
+  }
+});
+
 </script></body></html>
