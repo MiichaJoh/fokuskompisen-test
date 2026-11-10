@@ -159,6 +159,26 @@ body[data-theme="dark"] #loginMessage:not(:empty) { background: #454259; }
 body[data-theme="dark"] #resetPasswordButton { color: #e6d5ff; }
 @media (max-width: 480px) { #headerActions button { flex: 1; } }
 
+
+/* Tillgänglighet: läsbar text i inloggning och ljusa kontopaneler */
+#loginSection input[type="email"],
+#loginSection input[type="password"] {
+  background: #ffffff !important;
+  color: #24202e !important;
+  -webkit-text-fill-color: #24202e !important;
+  caret-color: #24202e !important;
+  border: 2px solid #75618b !important;
+  color-scheme: light;
+}
+#loginSection input::placeholder { color: #62566f !important; opacity: 1; }
+#loginSection input:focus-visible { outline: 3px solid #b59be0; outline-offset: 2px; }
+#syncPanel, #syncPanel h3, #syncPanel p, #syncStatus {
+  color: #30263b !important;
+}
+#backupPage .notice.warning {
+  color: #30263b !important;
+}
+
 </style>
 </head>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
