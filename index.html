@@ -511,6 +511,16 @@ async function loadAccount(session) {
   syncMessage("☁️ Hämtar dina uppgifter…");
   const cache = localStorage.getItem(accountKey(id));
   const hasPending = localStorage.getItem(pendingKey(id)) === "1";
+  // Visa alltid kontots lokala kopia först, även om webbläsaren felaktigt
+  // rapporterar online under en offline-start.
+  if (cache) {
+    try {
+      state = safeState(JSON.parse(cache));
+      syncReady = true;
+      drawAccountState();
+      syncMessage("Visar sparade kontouppgifter från den här enheten.");
+    } catch (_) { /* Behåll föregående tillstånd om kopian är skadad. */ }
+  }
   try {
     // Vid offline-start: visa senast hämtade kontokopian direkt.
     // Vänta inte på ett nätverksanrop som kan hänga utan anslutning.
@@ -1032,7 +1042,7 @@ function displayAuthState(session) {
   if (showApp) {
     // Återställ kontots lokala uppgifter direkt vid offline-start.
     // Annars kan den äldre 0.7-lagringen visas innan asynkron auth-hämtning körs.
-    if (!navigator.onLine && session?.user?.id) {
+    if (session?.user?.id) {
       const id = session.user.id;
       const cached = localStorage.getItem(accountKey(id));
       if (cached) {
@@ -1041,7 +1051,7 @@ function displayAuthState(session) {
           activeUserId = id;
           syncReady = true;
           drawAccountState();
-          syncMessage("Offline: visar senast sparade kontouppgifter på enheten.");
+          syncMessage("Visar senast sparade kontouppgifter på enheten.");
         } catch (e) {
           syncMessage("Kunde inte läsa den lokala kontokopian.");
         }
