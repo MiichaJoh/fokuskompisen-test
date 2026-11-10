@@ -234,7 +234,7 @@ body[data-theme="dark"] #resetPasswordButton { color: #e6d5ff; }
   <section id="weekPage"><h2>🗓️ Veckans överblick</h2><div class="week" id="week"></div></section>
 <section id="stepsPage"><h2>👣 Små steg</h2><label for="choose">Välj en uppgift</label><select id="choose"></select><div id="steps" class="panel">Välj en uppgift för att få hjälp med små steg.</div></section>
 <section id="pausePage"><h2>☕ Pauskompis</h2><p>En paus är också viktig. Starta en paus på 20 minuter när du vill.</p><div id="clock">20:00</div><button id="start">Starta paus</button><button class="alt" id="stop">Stoppa och återställ</button><p id="pause" class="panel">Du bestämmer när du är redo igen.</p></section>
-<section id="backupPage"><h2>💾 Säkerhetskopia</h2><p>Exportera dina uppgifter till en JSON-fil innan du uppdaterar eller byter mobil. Förvara filen privat – den kan innehålla personliga uppgifter.</p><div class="actions"><button type="button" id="export">Ladda ner säkerhetskopia</button><label for="import" class="alt" style="display:inline-block;padding:10px;border-radius:9px;cursor:pointer">Välj säkerhetskopia</label><input type="file" id="import" accept=".json,application/json" style="max-width:240px"></div><p class="notice warning">Import ersätter informationen på den här enheten. Exportera gärna en kopia först. Du får bekräfta innan något ändras.</p><p id="status" role="status"></p></section>
+<section id="backupPage"><h2>💾 Säkerhetskopia</h2><p>Exportera dina uppgifter till en JSON-fil innan du uppdaterar eller byter mobil. Förvara filen privat – den kan innehålla personliga uppgifter.</p><div class="actions"><button type="button" id="export">Ladda ner säkerhetskopia</button><label for="import" class="alt" style="display:inline-block;padding:10px;border-radius:9px;cursor:pointer">Välj säkerhetskopia</label><input type="file" id="import" accept=".json,application/json" style="max-width:240px"></div><p class="notice warning">Import ersätter uppgifterna på det inloggade kontot efter synkronisering. Exportera gärna en kopia först. Du får bekräfta innan något ändras.</p><p id="status" role="status"></p><div class="panel" id="syncPanel"><h3>☁️ Mina uppgifter på mitt konto</h3><p id="syncStatus" role="status" aria-live="polite">Kontrollerar synkronisering…</p><button type="button" id="migrateTasks" hidden>📥 Kopiera mina tidigare uppgifter till kontot</button><p class="small">Dina tidigare lokala uppgifter raderas inte. Behåll din JSON-säkerhetskopia.</p></div></section>
 <section id="ideasPage"><h2>💡 Idébank</h2><div id="ideas"></div><p id="idea" class="panel">Välj en liten idé om du vill.</p></section>
 <section id="settingsPage">
   <h2>⚙️ Inställningar</h2>
@@ -415,10 +415,145 @@ try{
   const old=JSON.parse(localStorage.getItem(KEY)||"null");
   if(old && typeof old==="object" && Array.isArray(old.tasks)) state={...EMPTY,...old};
 }catch(e){storageOk=false}
+// Kontobunden lagring. Den äldre 0.7-nyckeln lämnas orörd.
+let activeUserId = null;
+let syncReady = false;
+let syncBusy = false;
+let syncTimer = null;
+let accountGeneration = 0;
+const accountKey = id => "fokuskompisen07account_" + id;
+const pendingKey = id => "fokuskompisen07pending_" + id;
+const syncMessage = message => { const el = $("syncStatus"); if (el) el.textContent = message; };
+const safeState = value => value && typeof value === "object" && Array.isArray(value.tasks)
+  ? {...EMPTY, ...value} : JSON.parse(JSON.stringify(EMPTY));
+function drawAccountState() {
+  $("name").value = state.name || "";
+  $("feeling").value = state.feeling || "";
+  greeting(); energy(); render();
+}
+function queueSync() {
+  if (!activeUserId || !syncReady) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => { void flushSync(); }, 900);
+}
 const save=()=>{
-  try{localStorage.setItem(KEY,JSON.stringify(state));storageOk=true;return true}
-  catch(e){storageOk=false;$("status").textContent="Kunde inte spara lokalt. Exportera gärna en säkerhetskopia.";return false}
+  try {
+    if (!activeUserId || !syncReady) {
+      $("status").textContent = "Vänta tills dina kontouppgifter har laddats.";
+      return false;
+    }
+    localStorage.setItem(accountKey(activeUserId), JSON.stringify(state));
+    localStorage.setItem(pendingKey(activeUserId), "1");
+    storageOk = true;
+    syncMessage("Sparat på enheten. Synkroniserar när internet finns…");
+    queueSync();
+    return true;
+  } catch(e) {
+    storageOk=false;
+    $("status").textContent="Kunde inte spara lokalt. Exportera gärna en säkerhetskopia.";
+    return false;
+  }
 };
+async function flushSync() {
+  if (!activeUserId || !syncReady || syncBusy || !navigator.onLine) return;
+  const id = activeUserId;
+  if (localStorage.getItem(pendingKey(id)) !== "1") return;
+  syncBusy = true;
+  try {
+    const snapshot = localStorage.getItem(accountKey(id));
+    if (!snapshot) return;
+    const {error} = await fokusSupabase.from("user_tasks").upsert({
+      id, user_id:id, task_data:JSON.parse(snapshot), updated_at:new Date().toISOString()
+    }, {onConflict:"id"});
+    if (error) throw error;
+    // Rensa inte väntande ändringar som gjorts medan uppladdningen pågick.
+    if (activeUserId === id && localStorage.getItem(accountKey(id)) === snapshot) {
+      localStorage.removeItem(pendingKey(id));
+      syncMessage("☁️ Dina uppgifter är sparade på kontot.");
+    } else if (activeUserId === id) queueSync();
+  } catch(e) {
+    if (activeUserId === id) syncMessage("Ändringarna finns kvar på enheten. Kunde inte synkronisera ännu.");
+  } finally { syncBusy=false; }
+}
+async function loadAccount(session) {
+  const id = session?.user?.id;
+  const generation = ++accountGeneration;
+  clearTimeout(syncTimer);
+  syncReady = false;
+  activeUserId = id || null;
+  if (!id) {
+    state = safeState(null);
+    drawAccountState();
+    syncMessage("Logga in för att använda kontolagring.");
+    $("migrateTasks").hidden = true;
+    return;
+  }
+  syncMessage("☁️ Hämtar dina uppgifter…");
+  const cache = localStorage.getItem(accountKey(id));
+  const hasPending = localStorage.getItem(pendingKey(id)) === "1";
+  try {
+    if (hasPending) {
+      state = safeState(JSON.parse(cache || "null"));
+      syncReady = true;
+      drawAccountState();
+      queueSync();
+    } else {
+      const {data,error} = await fokusSupabase.from("user_tasks")
+        .select("task_data").eq("user_id",id).maybeSingle();
+      if (error) throw error;
+      if (generation !== accountGeneration || activeUserId !== id) return;
+      state = data ? safeState(data.task_data) : safeState(null);
+      localStorage.setItem(accountKey(id),JSON.stringify(state));
+      syncReady = true;
+      drawAccountState();
+      syncMessage(data ? "☁️ Dina uppgifter är hämtade från kontot." : "☁️ Kontot är redo. Inga sparade uppgifter ännu.");
+    }
+  } catch(e) {
+    if (generation !== accountGeneration || activeUserId !== id) return;
+    if (cache) {
+      state = safeState(JSON.parse(cache));
+      syncReady = true;
+      drawAccountState();
+      syncMessage("Offline eller anslutningsfel. Visar uppgifter sparade på den här enheten.");
+    } else {
+      state = safeState(null);
+      drawAccountState();
+      syncMessage("Kunde inte hämta kontouppgifter. Försök igen med internet innan du ändrar något.");
+    }
+  }
+  if (generation === accountGeneration && activeUserId === id) {
+    const legacy = safeState(JSON.parse(localStorage.getItem(KEY) || "null"));
+    $("migrateTasks").hidden = legacy.tasks.length === 0;
+  }
+}
+$("migrateTasks").addEventListener("click", () => {
+  if (!activeUserId || !syncReady) return;
+  const legacy = safeState(JSON.parse(localStorage.getItem(KEY) || "null"));
+  if (!legacy.tasks.length) return;
+  if (!confirm("Kopiera dina tidigare lokala uppgifter till detta konto? Nuvarande kontouppgifter behålls. En säkerhetskopia rekommenderas.")) return;
+  const ids = new Set(state.tasks.map(t=>String(t.id)));
+  const additions = legacy.tasks.filter(t=>!ids.has(String(t.id)));
+  state.tasks.push(...additions);
+  if (!state.name) state.name = legacy.name;
+  if (!state.feeling) state.feeling = legacy.feeling;
+  if (!state.energy) state.energy = legacy.energy;
+  if (save()) { drawAccountState(); syncMessage("Tidigare uppgifter kopierade. Synkroniserar…"); $("migrateTasks").hidden=true; }
+});
+window.addEventListener("online", () => { void flushSync(); });
+window.addEventListener("focus", async () => {
+  if (!activeUserId || !syncReady) return;
+  if (localStorage.getItem(pendingKey(activeUserId)) === "1") { void flushSync(); return; }
+  const id = activeUserId;
+  try {
+    const {data,error} = await fokusSupabase.from("user_tasks").select("task_data").eq("user_id",id).maybeSingle();
+    if (!error && data && activeUserId === id && localStorage.getItem(pendingKey(id)) !== "1") {
+      state = safeState(data.task_data);
+      localStorage.setItem(accountKey(id),JSON.stringify(state));
+      drawAccountState();
+      syncMessage("☁️ Dina uppgifter är uppdaterade.");
+    }
+  } catch(e) { /* Lokal kopia behålls. */ }
+});
 const dateKey=(d=new Date())=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
 const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const priorities={today:"Måste göras idag",soon:"Bra om det blir gjort",later:"Kan vänta"};
@@ -885,10 +1020,16 @@ fokusSupabase.auth.onAuthStateChange((event, session) => {
     loginStatus.textContent = "Du har loggat ut. 💜";
   }
   displayAuthState(session);
+  if (event === "SIGNED_IN" || event === "INITIAL_SESSION" || event === "SIGNED_OUT") {
+    if (event === "SIGNED_OUT" || session?.user?.id !== activeUserId) {
+      // Kör efter auth-callbacken så att Supabase inte blockeras.
+      setTimeout(() => { void loadAccount(session); }, 0);
+    }
+  }
 });
 
 fokusSupabase.auth.getSession().then(({data, error}) => {
-  if (!authReady && !error) displayAuthState(data.session);
+  if (!authReady && !error) { displayAuthState(data.session); void loadAccount(data.session); }
   if (error) loginStatus.textContent = "Kunde inte kontrollera inloggningen. Försök igen.";
 }).catch(() => { loginStatus.textContent = "Kunde inte kontrollera inloggningen. Kontrollera internetanslutningen."; });
 
