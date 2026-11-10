@@ -1030,6 +1030,23 @@ function displayAuthState(session) {
     if (section) section.hidden = true;
   });
   if (showApp) {
+    // Återställ kontots lokala uppgifter direkt vid offline-start.
+    // Annars kan den äldre 0.7-lagringen visas innan asynkron auth-hämtning körs.
+    if (!navigator.onLine && session?.user?.id) {
+      const id = session.user.id;
+      const cached = localStorage.getItem(accountKey(id));
+      if (cached) {
+        try {
+          state = safeState(JSON.parse(cached));
+          activeUserId = id;
+          syncReady = true;
+          drawAccountState();
+          syncMessage("Offline: visar senast sparade kontouppgifter på enheten.");
+        } catch (e) {
+          syncMessage("Kunde inte läsa den lokala kontokopian.");
+        }
+      }
+    }
     showPage("home");
     document.getElementById("loginPassword").value = "";
   }
