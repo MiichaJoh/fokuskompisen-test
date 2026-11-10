@@ -1,5 +1,5 @@
 // Behåll äldre cacheversioner för att undvika att offline-stöd bryts under uppdatering.
-const CACHE = "fokuskompisen-v07-offline3";
+const CACHE = "fokuskompisen-v07-offline4";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest"];
 const SUPABASE_SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 self.addEventListener("install", event => event.waitUntil((async () => {

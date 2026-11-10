@@ -1065,8 +1065,10 @@ fokusSupabase.auth.onAuthStateChange((event, session) => {
   }
   displayAuthState(session);
   if (event === "SIGNED_IN" || event === "INITIAL_SESSION" || event === "SIGNED_OUT") {
-    if (event === "SIGNED_OUT" || session?.user?.id !== activeUserId) {
-      // Kör efter auth-callbacken så att Supabase inte blockeras.
+    // INITIAL_SESSION måste alltid läsa kontocachen. displayAuthState kan redan
+    // ha satt activeUserId, vilket tidigare gjorde att loadAccount hoppades över.
+    if (event === "INITIAL_SESSION" || event === "SIGNED_OUT" ||
+        session?.user?.id !== activeUserId || !syncReady) {
       setTimeout(() => { void loadAccount(session); }, 0);
     }
   }
