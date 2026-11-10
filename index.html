@@ -512,7 +512,14 @@ async function loadAccount(session) {
   const cache = localStorage.getItem(accountKey(id));
   const hasPending = localStorage.getItem(pendingKey(id)) === "1";
   try {
-    if (hasPending) {
+    // Vid offline-start: visa senast hämtade kontokopian direkt.
+    // Vänta inte på ett nätverksanrop som kan hänga utan anslutning.
+    if (!navigator.onLine && cache) {
+      state = safeState(JSON.parse(cache));
+      syncReady = true;
+      drawAccountState();
+      syncMessage("Offline: visar senast sparade uppgifter på den här enheten.");
+    } else if (hasPending) {
       state = safeState(JSON.parse(cache || "null"));
       syncReady = true;
       drawAccountState();

@@ -1,5 +1,35 @@
-const CACHE="fokuskompisen-v07-auth2";
-const ASSETS=["./","./index.html","./manifest.webmanifest"];
-self.addEventListener("install",event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
-self.addEventListener("activate",event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith("fokuskompisen-v07-auth2")&&key!==CACHE)await caches.delete(key);await self.clients.claim()})()));
-self.addEventListener("fetch",event=>{if(event.request.method!=="GET"||new URL(event.request.url).origin!==self.location.origin)return;event.respondWith((async()=>{try{const response=await fetch(event.request);if(response.ok){const cache=await caches.open(CACHE);cache.put(event.request,response.clone())}return response}catch(e){return (await caches.match(event.request))||Response.error()}})())});
+// Behåll äldre cacheversioner för att undvika att offline-stöd bryts under uppdatering.
+const CACHE = "fokuskompisen-v07-offline3";
+const ASSETS = ["./", "./index.html", "./manifest.webmanifest"];
+const SUPABASE_SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+self.addEventListener("install", event => event.waitUntil((async () => {
+  const cache = await caches.open(CACHE);
+  await cache.addAll(ASSETS);
+  // Offline-inloggning behöver även SDK-skriptet. Ett CDN-fel får inte stoppa installationen.
+  try { await cache.add(new Request(SUPABASE_SDK, {mode:"cors"})); } catch (_) {}
+  await self.skipWaiting();
+})()));
+self.addEventListener("activate", event => event.waitUntil((async () => {
+  await self.clients.claim();
+})()));
+self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+  const isSdk = url.href === SUPABASE_SDK;
+  if (url.origin !== self.location.origin && !isSdk) return;
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE);
+    // CDN-skriptet måste kunna laddas offline; använd sparad kopia i första hand.
+    if (isSdk) {
+      const cached = await caches.match(event.request);
+      if (cached) return cached;
+    }
+    try {
+      const response = await fetch(event.request);
+      if (response.ok) await cache.put(event.request, response.clone());
+      return response;
+    } catch (_) {
+      return (await caches.match(event.request)) || Response.error();
+    }
+  })());
+});
